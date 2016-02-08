@@ -38,4 +38,4 @@ Paystack.install = function () {
   return window.plugins.paystack;
 };
 
-cordova.addConstructor(Toast.install);
+cordova.addConstructor(Paystack.install);
