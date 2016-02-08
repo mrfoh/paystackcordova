@@ -2,6 +2,7 @@ package com.mrfoh.paystackcordova;
 
 import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.CallbackContext;
+import org.apache.cordova.PluginResult;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -38,10 +39,10 @@ public class Paystack extends CordovaPlugin {
 		try {
 			this.secret = args.getString(0);
 		    if (ACTION_INIT.equals(action)) { 
-		    	this.initializeTransaction(args.getString(1), args.getString(2), args.getString(3));
+		    	this.initializeTransaction(args.getString(1), args.getString(2), args.getString(3), callbackContext);
 		   	}
 
-		   	else if (ACTION_VERIFY.equal(action)) {
+		   	else if (ACTION_VERIFY.equals(action)) {
 		   		this.verifyTransaction(args.getString(1));
 		   	}
 
@@ -55,27 +56,27 @@ public class Paystack extends CordovaPlugin {
 		} 
 	 }
 	 
-	 private string initializeTransaction(String reference, String email, String amount, CallbackContext callbackContext) {
+	 private void initializeTransaction(String reference, String email, String amount, CallbackContext callbackContext) throws IOException, JSONException{
 		 
 		MediaType json = MediaType.parse("application/json; charset=utf-8");
 		String authorization = "Bearer "+this.secret;
 
 		JSONObject requestBody = new JSONObject();
-		requestBody.addProperty("reference", reference);
-		requestBody.addProperty("email", email);
-		requestBody.addProperty("amount", amount);
+		requestBody.put("reference", reference);
+		requestBody.put("email", email);
+		requestBody.put("amount", amount);
 
-		RequestBody body = RequestBody.create(json, requestBody);
+		RequestBody body = RequestBody.create(json, requestBody.toString());
 		Request request = new Request.Builder()
 			.url(this.initializeUrl)
-			.addHeader('Authorization', authorization)
-			.addHeader('Content-Type', "application/json")
+			.addHeader("Authorization", authorization)
+			.addHeader("Content-Type", "application/json")
 			.post(body)
 			.build();
 
 		Response response = this.client.newCall(request).execute();
 
-		if(!response.isSuccessfull()) {
+		if(!response.isSuccessful()) {
 			callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.NO_RESULT, 0));
 			throw new IOException("Request Error "+ response);
 		}
@@ -91,5 +92,7 @@ public class Paystack extends CordovaPlugin {
 	 
 	 private void verifyTransaction(String reference) {
 		 
+		MediaType json = MediaType.parse("application/json; charset=utf-8");
+		String authorization = "Bearer "+this.secret;
 	 }
 }

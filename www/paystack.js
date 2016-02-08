@@ -1,5 +1,5 @@
 var Paystack = function() {
-}
+};
 
 /**
 * Initialize transaction
