@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+    <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0" xmlns:android="http://schemas.android.com/apk/res/android" id="com.mrfoh.paystackcordova" version="0.0.1">
+        <name>PaystackCordova</name>
+
+        <description>Cordova Plugin for PayStack</description>
+
+        <license>Apache 2.0</license>
+
+        <keywords>cordova,paystack</keywords>
+
+        <js-module src="www/paystack.js" name="device">
+            <clobbers target="paystack" />
+        </js-module>
+        
+        <!-- android -->
+        <platform name="android">
+            <config-file target="res/xml/config.xml" parent="/*">
+              <feature name="PaystackCordova">
+                <param name="android-package" value="com.mrfoh.paystackcordova.Paystack" />
+              </feature>
+            </config-file>
+
+            <source-file src="src/android/libs/okio-1.6.0.jar" target-dir="libs" framework="true" />
+            <source-file src="src/android/libs/okhttp-2.6.0.jar" target-dir="libs" framework="true" />
+            <source-file src="src/android/Paystack.java" target-dir="src/com/mrfoh/paystackcordova/paystack" />
+        </platform>
+
+    </plugin>
