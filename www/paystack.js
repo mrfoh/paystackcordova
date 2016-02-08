@@ -1,4 +1,5 @@
-window.Paystack = {};
+var Paystack = function() {
+}
 
 /**
 * Initialize transaction
@@ -27,3 +28,5 @@ Paystack.prototype.verify = function(reference, successCallback, errorCallback) 
 		[options.secret_key, options.reference]
 	);
 };
+
+module.exports = Paystack;

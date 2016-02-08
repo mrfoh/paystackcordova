@@ -58,6 +58,7 @@ public class Paystack extends CordovaPlugin {
 	 private string initializeTransaction(String reference, String email, String amount, CallbackContext callbackContext) {
 		 
 		MediaType json = MediaType.parse("application/json; charset=utf-8");
+		String authorization = "Bearer "+this.secret;
 
 		JSONObject requestBody = new JSONObject();
 		requestBody.addProperty("reference", reference);
@@ -67,7 +68,7 @@ public class Paystack extends CordovaPlugin {
 		RequestBody body = RequestBody.create(json, requestBody);
 		Request request = new Request.Builder()
 			.url(this.initializeUrl)
-			.addHeader('Authorization', "Bearer "+this.secret)
+			.addHeader('Authorization', authorization)
 			.addHeader('Content-Type', "application/json")
 			.post(body)
 			.build();
