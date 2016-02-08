@@ -8,8 +8,8 @@
 
         <keywords>cordova,paystack</keywords>
 
-        <js-module src="www/paystack.js" name="device">
-            <clobbers target="paystack" />
+        <js-module src="www/paystack.js" name="Paystack">
+            <clobbers target="window.plugins.paystack" />
         </js-module>
         
         <!-- android -->

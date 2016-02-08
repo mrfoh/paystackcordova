@@ -29,4 +29,13 @@ Paystack.prototype.verify = function(reference, successCallback, errorCallback) 
 	);
 };
 
-module.exports = Paystack;
+Paystack.install = function () {
+  if (!window.plugins) {
+    window.plugins = {};
+  }
+
+  window.plugins.paystack = new Paystack();
+  return window.plugins.paystack;
+};
+
+cordova.addConstructor(Toast.install);
