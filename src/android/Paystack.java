@@ -92,11 +92,12 @@ public class Paystack extends CordovaPlugin {
 		}
 	}
 	 
-	private void verifyTransaction(String reference, CallbackContext callbackContext) throws JSONException {
+	private void verifyTransaction(String reference, CallbackContext callbackContext) {
 		 
 		MediaType json = MediaType.parse("application/json; charset=utf-8");
 		String authorization = "Bearer "+this.secret;
 		String requestUrl = this.verifyUrl+"/"+reference;
+		final CallbackContext ctx = callbackContext;
 
 		Request request = new Request.Builder().
 			url(requestUrl).
@@ -107,20 +108,26 @@ public class Paystack extends CordovaPlugin {
 		this.client.newCall(request).enqueue(new Callback() {
 			@Override
 			public void onFailure(Request request, IOException throwable) {
-				callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.NO_RESULT, 0));
+				ctx.sendPluginResult(new PluginResult(PluginResult.Status.NO_RESULT, 0));
 				throwable.printStackTrace();
 			}
 
 			@Override
 			public void onResponse(Response response) throws IOException {
 				if(!response.isSuccessful()) {
-					callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.NO_RESULT, 0));
+					ctx.sendPluginResult(new PluginResult(PluginResult.Status.NO_RESULT, 0));
 					throw new IOException("Request Error "+ response);
 				}
 
 				if(response.code() == 200) {
-					JSONObject serverResponse = new JSONObject(response.body().string());
-					callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, serverResponse));
+					try {
+						JSONObject serverResponse = new JSONObject(response.body().string());
+						ctx.sendPluginResult(new PluginResult(PluginResult.Status.OK, serverResponse));
+					}
+					catch (JSONException e) {
+						System.err.println("Exception: " + e.getMessage());
+		   				ctx.sendPluginResult(new PluginResult(PluginResult.Status.NO_RESULT, 0));
+					}
 				}
 			}
 		});
