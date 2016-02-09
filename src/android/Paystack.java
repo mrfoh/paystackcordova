@@ -92,7 +92,7 @@ public class Paystack extends CordovaPlugin {
 		}
 	}
 	 
-	private void verifyTransaction(String reference, CallbackContext callbackContext) {
+	private void verifyTransaction(String reference, CallbackContext callbackContext) throws JSONException {
 		 
 		MediaType json = MediaType.parse("application/json; charset=utf-8");
 		String authorization = "Bearer "+this.secret;
