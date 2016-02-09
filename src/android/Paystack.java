@@ -43,7 +43,7 @@ public class Paystack extends CordovaPlugin {
 		   	}
 
 		   	else if (ACTION_VERIFY.equals(action)) {
-		   		this.verifyTransaction(args.getString(1));
+		   		this.verifyTransaction(args.getString(1), callbackContext);
 		   	}
 
 		    callbackContext.error("Invalid action");
@@ -56,7 +56,8 @@ public class Paystack extends CordovaPlugin {
 		} 
 	 }
 	 
-	 private void initializeTransaction(String reference, String email, String amount, CallbackContext callbackContext) throws IOException, JSONException{
+
+	private void initializeTransaction(String reference, String email, String amount, CallbackContext callbackContext) throws IOException, JSONException{
 		 
 		MediaType json = MediaType.parse("application/json; charset=utf-8");
 		String authorization = "Bearer "+this.secret;
@@ -88,11 +89,39 @@ public class Paystack extends CordovaPlugin {
 
 			callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, authorizationUrl));
 		}
-	 }
+	}
 	 
-	 private void verifyTransaction(String reference) {
+	private void verifyTransaction(String reference, CallbackContext callbackContext) {
 		 
 		MediaType json = MediaType.parse("application/json; charset=utf-8");
 		String authorization = "Bearer "+this.secret;
-	 }
+		String requestUrl = this.verifyUrl+"/"+reference;
+
+		Request request = new Request.Builder().
+			url(requestUrl).
+			addHeader("Authorization", authorization).
+			addHeader("Content-Type", "application/json").
+			build();
+
+		this.client.newCall(request).enqueue(new Callback() {
+			@Override
+			public void onFailure(Request request, IOException throwable) {
+				callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.NO_RESULT, 0));
+				throwable.printStackTrace();
+			}
+
+			@Override
+			public void onResponse(Response response) throws IOException {
+				if(!response.isSuccessful()) {
+					callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.NO_RESULT, 0));
+					throw new IOException("Request Error "+ response);
+				}
+
+				if(response.code() == 200) {
+					JSONObject serverResponse = new JSONObject(response.body().string());
+					callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, serverResponse));
+				}
+			}
+		});
+	}
 }
