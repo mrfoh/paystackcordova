@@ -11,7 +11,12 @@ Paystack.prototype.initialize = function(options, successCallback, errorCallback
 		errorCallback,
 		'PaystackCordova',
 		'initialize',
-		[options.secret_key, options.reference, options.amount, options.email ]
+		[{
+			"secret_key": options.secret_key,
+			"reference": options.reference,
+			"amount": options.amount,
+			"email": options.email
+		}]
 	);
 };
 
@@ -25,7 +30,10 @@ Paystack.prototype.verify = function(reference, successCallback, errorCallback) 
 		errorCallback,
 		'PaystackCordova',
 		'verify',
-		[options.secret_key, options.reference]
+		[{
+			"secret_key": options.secret_key,
+			"reference": options.reference
+		}]
 	);
 };
 

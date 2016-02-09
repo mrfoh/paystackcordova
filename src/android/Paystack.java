@@ -38,13 +38,26 @@ public class Paystack extends CordovaPlugin {
 	 @Override
      public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
 		try {
-			this.secret = args.getString(0);
 		    if (ACTION_INIT.equals(action)) { 
-		    	this.initializeTransaction(args.getString(1), args.getString(2), args.getString(3), callbackContext);
+		    	JSONObject arg_object = args.getJSONObject(0);
+
+		    	String secret_key = arg_object.getString("secret_key");
+		    	String ref = arg_object.getString("reference");
+		    	String email = arg_object.getString("email");
+		    	Integer amount = arg_object.getInt("amount");
+
+		    	this.secret = secret_key;
+		    	this.initializeTransaction(ref, email, amount, callbackContext);
 		   	}
 
 		   	else if (ACTION_VERIFY.equals(action)) {
-		   		this.verifyTransaction(args.getString(1), callbackContext);
+		   		JSONObject arg_object = args.getJSONObject(0);
+
+		   		String secret_key = arg_object.getString("secret_key");
+		   		String ref = arg_object.getString("reference");
+
+		   		this.secret = secret_key;
+		   		this.verifyTransaction(ref, callbackContext);
 		   	}
 
 		    callbackContext.error("Invalid action");
@@ -58,7 +71,7 @@ public class Paystack extends CordovaPlugin {
 	 }
 	 
 
-	private void initializeTransaction(String reference, String email, String amount, CallbackContext callbackContext) throws IOException, JSONException{
+	private void initializeTransaction(String reference, String email, Integer amount, CallbackContext callbackContext) throws IOException, JSONException{
 		 
 		MediaType json = MediaType.parse("application/json; charset=utf-8");
 		String authorization = "Bearer "+this.secret;
