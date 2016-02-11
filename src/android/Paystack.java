@@ -27,9 +27,13 @@ public class Paystack extends CordovaPlugin {
 	 
 	 private final String verifyUrl = "https://api.paystack.co/transaction/verify";
 
+	 private final String chargeUrl = "https://api.paystack.co/transaction/charge_authorization";
+
 	 public static final String ACTION_INIT = "initialize";
 
 	 public static final String ACTION_VERIFY = "verify";
+
+	 public static final String ACTION_CHARGE = "charge";
 
 	
 	 public Paystack() {
@@ -58,6 +62,19 @@ public class Paystack extends CordovaPlugin {
 
 		   		this.secret = secret_key;
 		   		this.verifyTransaction(ref, callbackContext);
+		   	}
+
+		   	else if (ACTION_CHARGE.equals(actions)) {
+		   		JSONObject arg_object = args.getJSONObject(0);
+
+		   		String secret_key = arg_object.getString("secret_key");
+		   		String ref = arg_object.getString("reference");
+		   		String email = arg_object.getString("email");
+		    	Integer amount = arg_object.getInt("amount");
+		    	String authCode = arg_object.getString("authorization_code");
+
+		    	this.secret = secret_key;
+		   		this.charge(authCode, email, amount, ref, callbackContext);
 		   	}
 
 		    callbackContext.error("Invalid action");
@@ -145,4 +162,58 @@ public class Paystack extends CordovaPlugin {
 			}
 		});
 	}
+
+	private void charge(String authorizationCode, String email, Integer amount, String reference, CallbackContext callbackContext) throws IOException {
+
+		MediaType json = MediaType.parse("application/json; charset=utf-8");
+		String authorization = "Bearer "+this.secret;
+		final CallbackContext ctx = callbackContext;
+
+		try {
+			JSONObject requestBody = new JSONObject();
+			requestBody.put("authorization_code", authorizationCode);
+			requestBody.put("reference", reference);
+			requestBody.put("email", email);
+			requestBody.put("amount", amount);
+		}
+		catch(JSONException e) {
+			System.err.println("Exception: " + e.getMessage());
+			callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.NO_RESULT, 0));
+		}
+
+		RequestBody body = RequestBody.create(json, requestBody.toString());
+		Request request = new Request.Builder()
+			.url(this.chargeUrl)
+			.addHeader("Authorization", authorization)
+			.addHeader("Content-Type", "application/json")
+			.post(body)
+			.build();
+
+		this.client.newCall(request).enqueue(new Callback() {
+			@Override
+			public void onFailure(Request request, IOException throwable) {
+				ctx.sendPluginResult(new PluginResult(PluginResult.Status.NO_RESULT, 0));
+				throwable.printStackTrace();
+			}
+
+			@Override
+			public void onResponse(Response response) throws IOException {
+				if(!response.isSuccessful()) {
+					ctx.sendPluginResult(new PluginResult(PluginResult.Status.NO_RESULT, 0));
+					throw new IOException("Request Error "+ response);
+				}
+
+				if(response.code() == 200) {
+					try {
+						JSONObject serverResponse = new JSONObject(response.body().string());
+						ctx.sendPluginResult(new PluginResult(PluginResult.Status.OK, serverResponse));
+					}
+					catch (JSONException e) {
+						System.err.println("Exception: " + e.getMessage());
+		   				ctx.sendPluginResult(new PluginResult(PluginResult.Status.NO_RESULT, 0));
+					}
+				}
+			}
+		});		
+	}	
 }

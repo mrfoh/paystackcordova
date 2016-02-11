@@ -9,8 +9,8 @@ Paystack.prototype.initialize = function(options, successCallback, errorCallback
 	exec(
 		successCallback,
 		errorCallback,
-		'PaystackCordova',
-		'initialize',
+		"PaystackCordova",
+		"initialize",
 		[{
 			"secret_key": options.secret_key,
 			"reference": options.reference,
@@ -21,21 +21,41 @@ Paystack.prototype.initialize = function(options, successCallback, errorCallback
 };
 
 /**
-* Initialize transaction
+* Verify transaction
 */
 Paystack.prototype.verify = function(options, successCallback, errorCallback) {
 	cordova.
 	exec(
 		successCallback,
 		errorCallback,
-		'PaystackCordova',
-		'verify',
+		"PaystackCordova",
+		"verify",
 		[{
 			"secret_key": options.secret_key,
 			"reference": options.reference
 		}]
 	);
 };
+
+/**
+* Charge 
+*/
+Paystack.prototype.charge = function(options, successCallback, errorCallback) {
+	cordova.
+	exec(
+		successCallback,
+		errorCallback,
+		"PaystackCordova",
+		"charge",
+		[{
+			"secret_key": options.secret_key,
+			"reference": options.reference,
+			"amount": options.amount,
+			"email": options.email,
+			"authorization_code": options.authorization_code
+		}]
+	);
+}
 
 Paystack.install = function () {
   if (!window.plugins) {
