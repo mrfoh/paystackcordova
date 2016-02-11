@@ -28,13 +28,6 @@ public class Paystack extends CordovaPlugin {
 	 private final String verifyUrl = "https://api.paystack.co/transaction/verify";
 
 	 private final String chargeUrl = "https://api.paystack.co/transaction/charge_authorization";
-
-	 public static final String ACTION_INIT = "initialize";
-
-	 public static final String ACTION_VERIFY = "verify";
-
-	 public static final String ACTION_CHARGE = "charge";
-
 	
 	 public Paystack() {
 	 }
@@ -42,7 +35,7 @@ public class Paystack extends CordovaPlugin {
 	 @Override
      public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
 		try {
-		    if (ACTION_INIT.equals(action)) { 
+		    if (action.equals("initialize")) { 
 		    	JSONObject arg_object = args.getJSONObject(0);
 
 		    	String secret_key = arg_object.getString("secret_key");
@@ -52,9 +45,10 @@ public class Paystack extends CordovaPlugin {
 
 		    	this.secret = secret_key;
 		    	this.initializeTransaction(ref, email, amount, callbackContext);
+		    	return true;
 		   	}
 
-		   	else if (ACTION_VERIFY.equals(action)) {
+		   	else if (action.equals("verify")) {
 		   		JSONObject arg_object = args.getJSONObject(0);
 
 		   		String secret_key = arg_object.getString("secret_key");
@@ -62,9 +56,10 @@ public class Paystack extends CordovaPlugin {
 
 		   		this.secret = secret_key;
 		   		this.verifyTransaction(ref, callbackContext);
+		   		return true;
 		   	}
 
-		   	else if (ACTION_CHARGE.equals(actions)) {
+		   	else if (action.equals("charge")) {
 		   		JSONObject arg_object = args.getJSONObject(0);
 
 		   		String secret_key = arg_object.getString("secret_key");
@@ -75,6 +70,7 @@ public class Paystack extends CordovaPlugin {
 
 		    	this.secret = secret_key;
 		   		this.charge(authCode, email, amount, ref, callbackContext);
+		   		return true;
 		   	}
 
 		    callbackContext.error("Invalid action");
@@ -163,23 +159,17 @@ public class Paystack extends CordovaPlugin {
 		});
 	}
 
-	private void charge(String authorizationCode, String email, Integer amount, String reference, CallbackContext callbackContext) throws IOException {
+	private void charge(String authorizationCode, String email, Integer amount, String reference, CallbackContext callbackContext) throws IOException, JSONException {
 
 		MediaType json = MediaType.parse("application/json; charset=utf-8");
 		String authorization = "Bearer "+this.secret;
 		final CallbackContext ctx = callbackContext;
 
-		try {
-			JSONObject requestBody = new JSONObject();
-			requestBody.put("authorization_code", authorizationCode);
-			requestBody.put("reference", reference);
-			requestBody.put("email", email);
-			requestBody.put("amount", amount);
-		}
-		catch(JSONException e) {
-			System.err.println("Exception: " + e.getMessage());
-			callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.NO_RESULT, 0));
-		}
+		JSONObject requestBody = new JSONObject();
+		requestBody.put("authorization_code", authorizationCode);
+		requestBody.put("reference", reference);
+		requestBody.put("email", email);
+		requestBody.put("amount", amount);
 
 		RequestBody body = RequestBody.create(json, requestBody.toString());
 		Request request = new Request.Builder()
