@@ -23,7 +23,7 @@ Paystack.prototype.initialize = function(options, successCallback, errorCallback
 /**
 * Initialize transaction
 */
-Paystack.prototype.verify = function(reference, successCallback, errorCallback) {
+Paystack.prototype.verify = function(options, successCallback, errorCallback) {
 	cordova.
 	exec(
 		successCallback,
