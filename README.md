@@ -19,9 +19,12 @@ Returns a paystack authorization url in the successCallback, and an error object
  
 #####**options**
 
-secret_key: Paystack secret_key 
+secret_key: Paystack secret_key
+
 reference: Unique transaction reference
+
 amount: Transaction amount in kobo
+
 email: Customer email address
 
 #####**successCallback**
@@ -46,6 +49,7 @@ Returns a response object in the successCallback, and an error object in the err
 #####**options**
 
 secret_key: Paystack secret_key 
+
 reference: Unique transaction reference
 
 #####**successCallback**
@@ -70,9 +74,13 @@ Returns a response object in the successCallback, and an error object in the err
 #####**options**
 
 secret_key: Paystack secret_key 
+
 reference: Unique transaction reference
+
 amount: Transaction amount in kobo
+
 email: Customer email,
+
 authorization_code: Authorization code
 
 #####**successCallback**
